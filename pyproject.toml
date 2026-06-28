@@ -1,0 +1,56 @@
+# ==============================================================================
+# 1. THE PEP 517/518 BUILD ISOLATION CONTROLLER
+# ==============================================================================
+[build-system]
+# Frontend installers (like pip) must fetch these dependencies first.
+# This ensures PyTorch's C++ header files are active before 
+setup.py
+ runs.
+requires = [
+    "setuptools>=61.0.0",
+    "wheel>=0.36.0",
+    "torch>=2.0.0",
+]
+build-backend = "setuptools.build_meta"
+
+# ==============================================================================
+# 2. CORE PROJECT METADATA DEFINITIONS (PEP 621)
+# ==============================================================================
+[project]
+name = "spda_lib"
+version = "0.1.0"
+description = "A highly modular, pluggable spda benchmark harness"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Saurav"}
+]
+license = { text = "MIT" }
+
+# Runtime package dependencies installed when installing this project
+dependencies = [
+    "torch>=2.0.0",
+    "triton>=2.0.0",
+    "pyyaml",
+]
+
+# ==============================================================================
+# 3. SETUOTOOLS SPECIFIC PACKAGE DISCOVERY HINTS
+# ==============================================================================
+[tool.setuptools]
+# Mirrors 'package_dir={" ": "src"}' to locate your target package structure
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ==============================================================================
+# 4. ENVIRONMENT STATIC ANALYSIS & TOOL CONFIGURATIONS (Optional but Recommended)
+# ==============================================================================
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+known_first_party = ["spda_lib"]
