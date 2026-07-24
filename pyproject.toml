@@ -2,12 +2,13 @@
 # 1. THE PEP 517/518 BUILD ISOLATION CONTROLLER
 # ==============================================================================
 [build-system]
-# Frontend installers (like pip) must fetch these dependencies first.
-# This ensures PyTorch C++ header files are active before setup.py runs.
+# Tells frontend tools (like pip) what dependencies it needs to use for building.
+# When compiling unisolated, pip verifies these exist in your host environment.
 requires = [
     "setuptools>=61.0.0",
     "wheel>=0.36.0",
     "torch>=2.0.0",
+    "numpy",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -17,15 +18,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "spda_lib"
 version = "0.1.0"
-description = "A highly modular, pluggable spda benchmark harness"
+description = "A highly modular, pluggable attention benchmark harness"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-    { name = "Saurav"}
+    { name = "Saurav" }
 ]
 license = { text = "MIT" }
 
-# Runtime package dependencies installed when installing this project
+# Runtime package dependencies installed when someone imports this project
 dependencies = [
     "torch>=2.0.0",
     "triton>=2.0.0",
@@ -36,14 +37,14 @@ dependencies = [
 # 3. SETUOTOOLS SPECIFIC PACKAGE DISCOVERY HINTS
 # ==============================================================================
 [tool.setuptools]
-# Mirrors 'package_dir={" ": "src"}' to locate your target package structure
+# Instructs setuptools to look inside the 'src' directory for python source folders
 package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 # ==============================================================================
-# 4. ENVIRONMENT STATIC ANALYSIS & TOOL CONFIGURATIONS (Optional but Recommended)
+# 4. ENVIRONMENT STATIC ANALYSIS & TOOL CONFIGURATIONS
 # ==============================================================================
 [tool.black]
 line-length = 88
