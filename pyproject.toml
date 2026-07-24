@@ -3,9 +3,7 @@
 # ==============================================================================
 [build-system]
 # Frontend installers (like pip) must fetch these dependencies first.
-# This ensures PyTorch's C++ header files are active before 
-setup.py
- runs.
+# This ensures PyTorch C++ header files are active before setup.py runs.
 requires = [
     "setuptools>=61.0.0",
     "wheel>=0.36.0",

@@ -22,12 +22,13 @@ ext_modules = [
         name='attention_lib._C',
         sources=[
             'kernels/binding.cpp',
-            'kernels/cuda/naive_spda_kernel.cu',
+            'kernels/naive_cuda/naive_spda_kernel.cu',
         ],
         # Tells the preprocessor to use 'csrc/' as a base root path, 
         # allowing binding.cpp to safely call #include "naive_cuda/naive_spda_kernel.h"
         include_dirs=[
             os.path.join(BASE_DIR, 'kernels'),
+            os.path.join(BASE_DIR, 'kernels/naive_cuda')
         ],
         extra_compile_args=extra_compile_args
     )

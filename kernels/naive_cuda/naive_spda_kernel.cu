@@ -54,7 +54,7 @@ at::Tensor naive_spda_cuda(at::Tensor Q, at::Tensor K, at::Tensor V) {
 
     cudaStream_t stream = at::cuda::getCurrentCUDAStream();
 
-    spda_kernel<<<blocks, threads, 0, stream>>>(Q.data_ptr<float>(), K.data_ptr<float>(), V.data_ptr<float>(), output.data_ptr<float>(), S_matrix.data_ptr<float>(), batch_size, seq_len, num_heads, head_dim);
+    naive_spda_kernel<<<blocks, threads, 0, stream>>>(Q.data_ptr<float>(), K.data_ptr<float>(), V.data_ptr<float>(), output.data_ptr<float>(), S_matrix.data_ptr<float>(), batch_size, seq_len, num_heads, head_dim);
 
     return output;
 }
