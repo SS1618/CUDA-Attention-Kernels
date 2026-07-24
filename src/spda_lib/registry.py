@@ -6,7 +6,11 @@ def register_variants(name):
         return func
     return decorator
 
+def create_spda_variant(name):
+    if name not in SPDA_REGISTRY:
+        raise ValueError(f"SPDA variant '{name}' is not registered.")
+    return SPDA_REGISTRY[name]()
 def execute_spda_variant(name, *args, **kwargs):
     if name not in SPDA_REGISTRY:
         raise ValueError(f"SPDA variant '{name}' is not registered.")
-    return SPDA_REGISTRY[name](*args, **kwargs)
+    return SPDA_REGISTRY[name]().forward(*args, **kwargs)
