@@ -21,6 +21,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Check correctness of variant")
     
     # Take the name as a required CLI argument
+
+    print(SPDA_REGISTRY.keys())
+
     parser.add_argument(
         "variant_name", 
         type=str, 
@@ -30,9 +33,9 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    query = torch.randn(2, 8, 1024, 64, dtype=torch.bfloat16, device="cuda")
-    key   = torch.randn(2, 8, 1024, 64, dtype=torch.bfloat16, device="cuda")
-    value = torch.randn(2, 8, 1024, 64, dtype=torch.bfloat16, device="cuda")
+    query = torch.randn(2, 8, 1024, 64, dtype=torch.float32, device="cuda")
+    key   = torch.randn(2, 8, 1024, 64, dtype=torch.float32, device="cuda")
+    value = torch.randn(2, 8, 1024, 64, dtype=torch.float32, device="cuda")
 
-    check_corrrectness(query, key, value, create_spda_variant(args.name))
+    check_corrrectness(query, key, value, create_spda_variant(args.variant_name))
     

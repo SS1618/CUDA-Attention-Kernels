@@ -11,9 +11,9 @@ class NaivePytorchSPDA(BaseSPDA):
         return spda_kernel(Q, K, V)
 
 def spda_kernel(Q, K, V):
-    # Q, K, V: (batch_size, seq_len, num_heads, head_dim)
-    batch_size, seq_len, num_heads, head_dim = Q.shape
-    output = torch.zeros_like(Q)  # (batch_size, seq_len, num_heads, head_dim)
+    # Q, K, V: (batch_size, num_heads, seq_len, head_dim)
+    batch_size, num_heads, seq_len, head_dim = Q.shape
+    output = torch.zeros_like(Q)  # (batch_size, num_heads, seq_len, head_dim)
 
     scores = torch.matmul(Q, K.transpose(-2, -1)) / (head_dim ** 0.5)  # (batch_size, num_heads, seq_len, seq_len)
     attn_weights = torch.softmax(scores, dim=-1)  # (batch_size, num_heads, seq_len, seq_len)
