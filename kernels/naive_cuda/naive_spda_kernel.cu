@@ -5,12 +5,16 @@ __global__ void naive_spda_kernel(const float* __restrict__ Q, const float* __re
         int head_idx = blockIdx.x % num_heads;
         int seq_idx = threadIdx.x;
         float max_score = -1e9; // Initialize to a very small value for numerical stability
+        float scale = 1.0f / sqrtf((float)head_dim);
         for(int s = 0; s < seq_len; ++s) {
             float dot_product = 0.0f;
             for(int d = 0; d < head_dim; ++d) {
                 dot_product += Q[(batch_idx * num_heads * seq_len * head_dim) + (head_idx * seq_len * head_dim) + (seq_idx * head_dim) + d] *
                                K[(batch_idx * num_heads * seq_len * head_dim) + (head_idx * seq_len * head_dim) + (s * head_dim) + d];
             }
+
+            dot_product *= scale;
+            
             S_matrix[(batch_idx * num_heads * seq_len * seq_len) + (head_idx * seq_len * seq_len) + (seq_idx * seq_len) + s] = dot_product;
             if(dot_product > max_score) {
                 max_score = dot_product;
