@@ -12,17 +12,17 @@ extra_compile_args = {
     'nvcc': ['-O3', '--use_fast_math', '-Xcompiler', '-fPIC']
 }
 
-# 2. Configure our custom CUDA extension module mapped to spda_lib
+# 2. Configure our custom CUDA extension module mapped to sdpa_lib
 ext_modules = [
     CUDAExtension(
-        # This places the compiled binary directly into your real src/spda_lib/ directory
-        name='spda_lib._C',
+        # This places the compiled binary directly into your real src/sdpa_lib/ directory
+        name='sdpa_lib._C',
         sources=[
             'kernels/binding.cpp',
-            'kernels/naive_cuda/naive_spda_kernel.cu',
+            'kernels/naive_cuda/naive_sdpa_kernel.cu',
         ],
         # Tells the preprocessor to use 'kernels/' as a base root path, 
-        # allowing binding.cpp to safely call #include "naive_cuda/naive_spda_kernel.h"
+        # allowing binding.cpp to safely call #include "naive_cuda/naive_sdpa_kernel.h"
         include_dirs=[
             os.path.join(BASE_DIR, 'kernels'),
             os.path.join(BASE_DIR, 'kernels/naive_cuda')
@@ -36,7 +36,7 @@ setup(
     # Directs python to treat the 'src/' folder as the root directory for packages
     package_dir={'': 'src'},
     
-    # Automatically searches 'src/' and finds your 'spda_lib' package
+    # Automatically searches 'src/' and finds your 'sdpa_lib' package
     packages=find_packages(where='src'),
     
     # Mounts our custom compiled C++/CUDA extension module

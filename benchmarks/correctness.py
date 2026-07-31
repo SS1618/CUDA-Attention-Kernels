@@ -1,11 +1,11 @@
 import torch
 import torch.nn.functional as F
-from spda_lib.registry import create_spda_variant, SPDA_REGISTRY
+from sdpa_lib.registry import create_sdpa_variant, SDPA_REGISTRY
 import argparse
 
-def check_corrrectness(q, k, v, candidate_spda):
+def check_corrrectness(q, k, v, candidate_sdpa):
     reference_output = F.scaled_dot_product_attention(q, k, v)
-    candidate_output = candidate_spda.forward(q, k, v)
+    candidate_output = candidate_sdpa.forward(q, k, v)
 
     assert reference_output.shape == candidate_output.shape, f"shape mismatch {reference_output.shape} vs {candidate_output.shape}"
     nan_mismatch = torch.isnan(candidate_output) ^ torch.isnan(reference_output)
@@ -22,12 +22,12 @@ if __name__ == "__main__":
     
     # Take the name as a required CLI argument
 
-    print(SPDA_REGISTRY.keys())
+    print(SDPA_REGISTRY.keys())
 
     parser.add_argument(
         "variant_name", 
         type=str, 
-        choices=SPDA_REGISTRY.keys(),  # Restricts input to valid registered keys
+        choices=SDPA_REGISTRY.keys(),  # Restricts input to valid registered keys
         help="The name of the variant to run."
     )
     
@@ -37,5 +37,5 @@ if __name__ == "__main__":
     key   = torch.randn(2, 8, 1024, 64, dtype=torch.float32, device="cuda")
     value = torch.randn(2, 8, 1024, 64, dtype=torch.float32, device="cuda")
 
-    check_corrrectness(query, key, value, create_spda_variant(args.variant_name))
+    check_corrrectness(query, key, value, create_sdpa_variant(args.variant_name))
     

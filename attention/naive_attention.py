@@ -25,7 +25,7 @@ class NaiveAttention(nn.Module):
         key = self.key_linear(key).view(batch_size, -1, self.n_heads, self.head_dim).transpose(1, 2)
         value = self.value_linear(value).view(batch_size, -1, self.n_heads, self.head_dim).transpose(1, 2)
         
-        attn_output = kernels.naive_spda_pytorch.spda_kernel(query, key, value)
+        attn_output = kernels.naive_sdpa_pytorch.sdpa_kernel(query, key, value)
 
         # Final linear layer
         output = self.out_linear(attn_output)

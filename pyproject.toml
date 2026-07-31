@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 # 2. CORE PROJECT METADATA DEFINITIONS (PEP 621)
 # ==============================================================================
 [project]
-name = "spda_lib"
+name = "sdpa_lib"
 version = "0.1.0"
 description = "A highly modular, pluggable attention benchmark harness"
 readme = "README.md"
@@ -52,4 +52,4 @@ target-version = ['py38']
 
 [tool.isort]
 profile = "black"
-known_first_party = ["spda_lib"]
+known_first_party = ["sdpa_lib"]

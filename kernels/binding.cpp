@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
-#include "naive_spda_kernel.h"
+#include "naive_sdpa_kernel.h"
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-    m.def("naive_spda_cuda", &naive_spda_cuda, "Naive SPDA kernel");
+    m.def("naive_sdpa_cuda", &naive_sdpa_cuda, "Naive SDPA kernel");
 }
