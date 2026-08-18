@@ -6,7 +6,7 @@ import argparse
 def measure_gpu_latency(q, k, v, candidate_sdpa, num_warmup=10, num_iters=100):
     # Warm-up iterations
     for _ in range(num_warmup):
-        _ = candidate_sdpa.forward(q, k, v)
+        _ = candidate_sdpa(q, k, v)
     
     torch.cuda.synchronize()  # Ensure all warm-up operations are complete
 
@@ -14,9 +14,10 @@ def measure_gpu_latency(q, k, v, candidate_sdpa, num_warmup=10, num_iters=100):
     start_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
     end_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
 
+    start_event.record()
     for i in range(num_iters):
         start_events[i].record()
-        _ = candidate_sdpa.forward(q, k, v)
+        _ = candidate_sdpa(q, k, v)
         end_events[i].record()
 
     torch.cuda.synchronize()  # Wait for all operations to finish
@@ -42,3 +43,6 @@ if __name__ == "__main__":
 
     latency_ms = measure_gpu_latency(query, key, value, create_sdpa_variant(args.variant_name))
     print(f"Average latency for {args.variant_name}: {latency_ms:.4f} ms")
+
+    ref_latency_ms = measure_gpu_latency(query, key, value, F.scaled_dot_product_attention)
+    print(f"Average latency for reference implementation: {ref_latency_ms:.4f} ms")
