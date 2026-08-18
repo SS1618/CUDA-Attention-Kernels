@@ -14,7 +14,6 @@ def measure_gpu_latency(q, k, v, candidate_sdpa, num_warmup=10, num_iters=100):
     start_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
     end_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
 
-    start_event.record()
     for i in range(num_iters):
         start_events[i].record()
         _ = candidate_sdpa(q, k, v)
