@@ -11,16 +11,16 @@ def measure_gpu_latency(q, k, v, candidate_sdpa, num_warmup=10, num_iters=100):
     torch.cuda.synchronize()  # Ensure all warm-up operations are complete
 
     # Measure latency
-    start_event = torch.cuda.Event(enable_timing=True)
-    end_event = torch.cuda.Event(enable_timing=True)
+    start_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
+    end_events = [torch.cuda.Event(enable_timing=True) for _ in range(num_iters)]
 
-    start_event.record()
-    for _ in range(num_iters):
+    for i in range(num_iters):
+        start_events[i].record()
         _ = candidate_sdpa.forward(q, k, v)
-    end_event.record()
+        end_events[i].record()
 
     torch.cuda.synchronize()  # Wait for all operations to finish
-    elapsed_time_ms = start_event.elapsed_time(end_event) / num_iters  # Average time per iteration
+    elapsed_time_ms = sum(start_events[i].elapsed_time(end_events[i]) for i in range(num_iters)) / num_iters  # Average time per iteration
     return elapsed_time_ms
 
 if __name__ == "__main__":
