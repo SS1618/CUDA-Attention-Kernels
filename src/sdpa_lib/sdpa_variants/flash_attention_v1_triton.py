@@ -26,7 +26,7 @@ class FlashAttentionV1Triton(BaseSDPA):
     )
 @triton.jit
 def flash_attention_v1_triton_kernel(Q_ptr, K_ptr, V_ptr, O_ptr, 
-    Sum_ptr, Maxes_ptr, SEQ_LEN: tl.constexpr, BLOCK_R: tl.constexpr, BLOCK_C: tl.constexpr, HEAD_DIM: tl.constexpr, HEAD_SIZE: tl.constexpr):
+    Sum_ptr, Maxes_ptr, SEQ_LEN: tl.constexpr, HEAD_DIM: tl.constexpr, HEAD_SIZE: tl.constexpr, BLOCK_R: tl.constexpr, BLOCK_C: tl.constexpr):
 
     batch_id = tl.program_id(axis=0)
     head_id = tl.program_id(axis=1)
@@ -78,7 +78,7 @@ def flash_attention_v1_triton_kernel(Q_ptr, K_ptr, V_ptr, O_ptr,
             Sum_i = tl.load(Sum_ptr + (i * BLOCK_R) + summaxes_offsets, mask=flat_mask, other=0.0)
             Maxes_i = tl.load(Maxes_ptr + (i * BLOCK_R) + summaxes_offsets, mask = flat_mask, other=-float('inf'))
 
-            S_ij = tl.dot(Q_i, K_j)
+            S_ij = tl.dot(Q_i, K_j) * (1/ (HEAD_DIM ** 0.5))
 
             local_col_idx = (j * BLOCK_C) + tl.arange(0, BLOCK_C)
             col_mask = local_col_idx < SEQ_LEN
@@ -109,11 +109,11 @@ def flash_attention_v1_triton(Q: torch.Tensor, K: torch.Tensor, V: torch.Tensor)
     assert Q.is_cuda and K.is_cuda and V.is_cuda
 
     batch_size, num_heads, seq_len, head_dim = Q.shape
-    output = torch.empty_like(Q)
-    sums = torch.empty(batch_size, num_heads, seq_len)
-    maxes = -torch.inf(batch_size, num_heads,seq_len)
+    output = torch.zeros_like(Q)
+    sums = torch.zeros(batch_size, num_heads, seq_len).cuda()
+    maxes = torch.full((batch_size, num_heads,seq_len), -torch.inf).cuda()
     grid = (batch_size, num_heads)
 
-    flash_attention_v1_triton_kernel[grid](Q, K, V, output, sums, maxes, SEQ_LEN = seq_len, HEAD_SIZE = num_heads, HEAD_DIM = head_dim)
+    flash_attention_v1_triton_kernel[grid](Q, K, V, output, sums, maxes, SEQ_LEN = seq_len, HEAD_DIM = head_dim, HEAD_SIZE = num_heads)
 
     return output
