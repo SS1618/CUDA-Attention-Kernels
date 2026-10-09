@@ -78,7 +78,7 @@ def flash_attention_v1_triton_kernel(Q_ptr, K_ptr, V_ptr, O_ptr,
             Sum_i = tl.load(Sum_ptr + (i * BLOCK_R) + summaxes_offsets, mask=flat_mask, other=0.0)
             Maxes_i = tl.load(Maxes_ptr + (i * BLOCK_R) + summaxes_offsets, mask = flat_mask, other=-float('inf'))
 
-            S_ij = tl.dot(Q_i, K_j) * (1/ (HEAD_DIM ** 0.5))
+            S_ij = tl.dot(Q_i, K_j, input_precision="ieee") * (1/ (HEAD_DIM ** 0.5))
 
             local_col_idx = (j * BLOCK_C) + tl.arange(0, BLOCK_C)
             col_mask = local_col_idx < SEQ_LEN
