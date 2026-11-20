@@ -5,7 +5,7 @@ import argparse
 
 def check_corrrectness(q, k, v, candidate_sdpa):
     reference_output = F.scaled_dot_product_attention(q, k, v)
-    candidate_output = candidate_sdpa.forward(q, k, v)
+    candidate_output = candidate_sdpa(q, k, v)
 
     assert reference_output.shape == candidate_output.shape, f"shape mismatch {reference_output.shape} vs {candidate_output.shape}"
     nan_mismatch = torch.isnan(candidate_output) ^ torch.isnan(reference_output)
